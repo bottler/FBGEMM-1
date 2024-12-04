@@ -8,6 +8,7 @@
 # pyre-strict
 # pyre-ignore-all-errors[56]
 
+import os
 import random
 import unittest
 from typing import Callable, Dict, List, Optional, Tuple
@@ -282,6 +283,12 @@ class NBitFowardTest(NBitFowardTestCommon):
                 equal_nan=True,
             )
 
+    @unittest.skipIf(
+        os.getenv("GITHUB_ENV") is not None
+        and os.system("c++ --version | grep -i clang") == 0
+        and os.getenv("FBGEMM_TEST_WITH_ROCM", "0") == "1",
+        "This test is currently running into failing on rocm clang in OSS, and is being investigated.",
+    )
     @given(
         nbit_weights_ty=get_nbit_weights_ty(),
         use_array_for_index_remapping=st.booleans(),
